@@ -59,12 +59,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void undoDelete(User user) {
+        user.setIsDeactivated(false);
+        user.setDeactivationDate(null);
+        userRepo.save(user);
+    }
+
+    @Override
     public void deactivateUserScheduler() {
         List<User> users = userRepo.findAllByIsDeactivated(true);
         Date date = new Date();
         SimpleDateFormat DateFor = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
         System.out.println("scheduler working");
-
         users.forEach(user -> {
             String presentDate = DateFor.format(date);
             String deleteDate = user.getDeactivationDate();
@@ -75,4 +81,6 @@ public class UserServiceImpl implements UserService {
             }
         });
     }
+
+
 }

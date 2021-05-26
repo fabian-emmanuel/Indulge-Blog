@@ -43,11 +43,10 @@ public class PostController {
             postService.createPost(post);
             return new ResponseEntity<>(post, HttpStatus.OK);
         }
-
     }
 
     @PostMapping("/{userId}/likes/{postId}")
-    public ResponseEntity<PostLike> likePost(@PathVariable Long postId, @PathVariable Long userId, @Valid @RequestBody PostLike like){
+    public ResponseEntity<PostLike> likePost(@PathVariable Long postId, @PathVariable Long userId, @Valid PostLike like){
         var user = Optional.ofNullable(userService.getUserById(userId));
         var post = Optional.ofNullable(postService.getPostById(postId));
         var liked = Optional.ofNullable(postLikeService.getLike(like));

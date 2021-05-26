@@ -18,4 +18,6 @@ public interface UserService {
     User getUserByEmailAndPassword(String email, String password);
 
     void deactivateUserScheduler();
+
+    void undoDelete(User user);
 }

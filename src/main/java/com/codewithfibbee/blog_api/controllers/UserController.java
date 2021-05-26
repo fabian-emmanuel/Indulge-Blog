@@ -53,25 +53,27 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.IM_USED);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<User> login(@Valid @RequestBody User user, HttpSession session){
-        var userExist = Optional.ofNullable(userService.getUserByEmailAndPassword(user.getEmail(), user.getPassword()));
+    @PostMapping("/{userId}")
+    public ResponseEntity<User> login(HttpSession session, @PathVariable Long userId){
+        var userExist = Optional.ofNullable(userService.getUserById(userId));
+        //var userExist = Optional.ofNullable(userService.getUserByEmailAndPassword(user.getEmail(), user.getPassword()));
         if(userExist.isPresent()){
-            session.setAttribute("user", user);
-            return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
+            session.setAttribute("user", userExist.get());
+            return new ResponseEntity<>(userExist.get(), HttpStatus.ACCEPTED);
         } else
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId, @Valid @RequestBody User user){
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId, @Valid User user){
         var newUser = Optional.ofNullable(userService.getUserById(userId));
         if(newUser.isEmpty()) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         else if (!newUser.get().equals(user)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        else {
-            userService.delete(user);
-            return ResponseEntity.noContent().build();
+        else if(newUser.get().getIsDeactivated().equals(user.getIsDeactivated())){
+            userService.undoDelete(user);
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
+        userService.delete(user);
+        return ResponseEntity.noContent().build();
     }
-
 }
