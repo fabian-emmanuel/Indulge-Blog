@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -25,6 +24,6 @@ public class Comment {
     @ManyToOne
     private Post post;
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
-    private List<CommentLike> like;
+    /*@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private List<CommentLike> like;*/
 }

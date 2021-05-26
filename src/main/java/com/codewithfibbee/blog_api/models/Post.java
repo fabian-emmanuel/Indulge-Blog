@@ -26,10 +26,10 @@ public class Post {
     @ManyToOne
     private User user;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+   /* @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostLike> likes;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<Comment> comments;
+    private List<Comment> comments;*/
 
 }

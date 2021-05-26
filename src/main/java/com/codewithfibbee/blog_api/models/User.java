@@ -36,7 +36,7 @@ public class User implements Serializable {
 
     private String deactivationDate;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+/*    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -49,5 +49,5 @@ public class User implements Serializable {
     private List<CommentLike> commentLikes;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Favorite> favorites;
+    private List<Favorite> favorites;*/
 }
