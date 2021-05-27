@@ -20,13 +20,14 @@ public class CommentLikeServiceImpl implements CommentLikeService {
         commentLikeRepo.save(like);
     }
 
-    @Override
-    public CommentLike getLike(CommentLike like) {
-        return commentLikeRepo.findByCommentLike(like);
-    }
 
     @Override
     public void delete(CommentLike like) {
         commentLikeRepo.delete(like);
+    }
+
+    @Override
+    public CommentLike getLikeById(Long id) {
+        return commentLikeRepo.findCommentLikeById(id);
     }
 }

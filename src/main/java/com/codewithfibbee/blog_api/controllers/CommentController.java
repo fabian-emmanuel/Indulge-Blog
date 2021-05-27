@@ -6,6 +6,7 @@ import com.codewithfibbee.blog_api.service.CommentLikeService;
 import com.codewithfibbee.blog_api.service.CommentService;
 import com.codewithfibbee.blog_api.service.PostService;
 import com.codewithfibbee.blog_api.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/comments")
+@Slf4j
 public class CommentController {
     CommentService commentService;
     UserService userService;
@@ -54,16 +56,26 @@ public class CommentController {
     }
 
     @PostMapping("/{userId}/likes/{commentId}")
-    public ResponseEntity<CommentLike> likeComment(@PathVariable Long commentId, @PathVariable Long userId, @Valid @RequestBody CommentLike like){
+    public ResponseEntity<CommentLike> likeComment(@PathVariable Long commentId, @PathVariable Long userId, @Valid CommentLike like){
         var user = Optional.ofNullable(userService.getUserById(userId));
         var comment = Optional.ofNullable(commentService.getCommentById(commentId));
-        var liked = Optional.ofNullable(likeService.getLike(like));
-        if (user.isPresent() && comment.isPresent()){
-            if (liked.isPresent()) likeService.delete(like);
+        var liked = Optional.ofNullable(likeService.getLikeById(like.getId()));
+        if (user.isPresent() && comment.isPresent() && liked.isEmpty()){
             like.setUser(user.get());
             like.setComment(comment.get());
             likeService.save(like);
             return new ResponseEntity<>(like, HttpStatus.OK);
+        } else return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @DeleteMapping("/{userId}/likes/{commentId}")
+    public ResponseEntity<?> unlikeComment(@PathVariable Long commentId, @PathVariable Long userId, @Valid CommentLike like){
+        var user = Optional.ofNullable(userService.getUserById(userId));
+        var comment = Optional.ofNullable(commentService.getCommentById(commentId));
+        var liked = Optional.ofNullable(likeService.getLikeById(like.getId()));
+        if (user.isPresent() && comment.isPresent() && liked.isPresent()){
+            likeService.delete(like);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
     }
 

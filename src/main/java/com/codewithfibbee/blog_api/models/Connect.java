@@ -5,17 +5,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
 
 @Data @NoArgsConstructor @AllArgsConstructor
 @Entity
-public class Connect {
+public class Connect implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
-    private User follower;
+    private Long userId;
 
-    @ManyToOne
-    private User followee;
+    private Long followerId;
 
 }

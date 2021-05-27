@@ -3,7 +3,9 @@ package com.codewithfibbee.blog_api.controllers;
 
 import com.codewithfibbee.blog_api.models.User;
 import com.codewithfibbee.blog_api.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RestController @RequestMapping("/users")
+@Slf4j
 public class UserController {
     private final UserService userService;
 
@@ -34,7 +37,7 @@ public class UserController {
     public ResponseEntity<User> getUser(@PathVariable Long userId){
         var user = Optional.ofNullable(userService.getUserById(userId));
         if(user.isEmpty()) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        else return new ResponseEntity<>(user.get(), HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(user.get(), HttpStatus.OK);
     }
 
     @PostMapping("/register")
@@ -44,13 +47,10 @@ public class UserController {
             String regex = "^(.+)@(.+)$";
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(user.getEmail());
-            if (!matcher.matches()){
-                return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-            }
+            if (!matcher.matches()) return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
             userService.saveUser(user);
             return new ResponseEntity<>(user, HttpStatus.OK);
-        } else
-            return new ResponseEntity<>(HttpStatus.IM_USED);
+        } else return new ResponseEntity<>(HttpStatus.IM_USED);
     }
 
     @PostMapping("/{userId}")
@@ -59,21 +59,32 @@ public class UserController {
         //var userExist = Optional.ofNullable(userService.getUserByEmailAndPassword(user.getEmail(), user.getPassword()));
         if(userExist.isPresent()){
             session.setAttribute("user", userExist.get());
-            return new ResponseEntity<>(userExist.get(), HttpStatus.ACCEPTED);
-        } else
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Set-Cookie", userExist.get().toString());
+            return  ResponseEntity.ok().headers(headers).body(userExist.get());
+        } else return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<Boolean> doLogout(HttpSession session){
+        session.removeAttribute("user");
+        session.invalidate();
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId, @Valid User user){
+    public ResponseEntity<Void> deleteAndUndeleteUser(@PathVariable Long userId) {
+        log.info("REACHED!!!!!");
         var newUser = Optional.ofNullable(userService.getUserById(userId));
-        if(newUser.isEmpty()) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        else if (!newUser.get().equals(user)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        else if(newUser.get().getIsDeactivated().equals(user.getIsDeactivated())){
-            userService.undoDelete(user);
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        if (newUser.isPresent()){
+        if (newUser.get().getIsDeactivated() == null || !newUser.get().getIsDeactivated()) {
+            userService.delete(newUser.get());
+            return new ResponseEntity<>(HttpStatus.OK);
         }
-        userService.delete(user);
+        if (newUser.get().getIsDeactivated()) {
+            userService.undoDelete(newUser.get());
+            return new ResponseEntity<>(HttpStatus.OK);
+        }}
         return ResponseEntity.noContent().build();
     }
 }

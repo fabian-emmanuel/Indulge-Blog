@@ -3,6 +3,7 @@ package com.codewithfibbee.blog_api.service.serviceImpl;
 import com.codewithfibbee.blog_api.models.User;
 import com.codewithfibbee.blog_api.repositories.UserRepo;
 import com.codewithfibbee.blog_api.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
 
@@ -48,10 +50,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(User user) {
+        log.info("***** DELETE USER CALLED *****");
         SimpleDateFormat DateFor = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, 5);
-
         String presentDate = DateFor.format(calendar.getTime());
         user.setIsDeactivated(true);
         user.setDeactivationDate(presentDate);
@@ -60,6 +62,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void undoDelete(User user) {
+        log.info("***** UNDO DELETE CALLED *****");
         user.setIsDeactivated(false);
         user.setDeactivationDate(null);
         userRepo.save(user);
@@ -70,7 +73,7 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepo.findAllByIsDeactivated(true);
         Date date = new Date();
         SimpleDateFormat DateFor = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-        System.out.println("scheduler working");
+        log.info("***** SCHEDULER IS RUNNING *****");
         users.forEach(user -> {
             String presentDate = DateFor.format(date);
             String deleteDate = user.getDeactivationDate();

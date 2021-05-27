@@ -1,5 +1,6 @@
 package com.codewithfibbee.blog_api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,18 +37,27 @@ public class User implements Serializable {
 
     private String deactivationDate;
 
-/*    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<PostLike> postLikes;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<CommentLike> commentLikes;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Favorite> favorites;*/
+    private List<Favorite> favorites;
+
+    public User(Long i, String n, String e, String p) {
+    }
 }

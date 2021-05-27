@@ -21,8 +21,8 @@ public class PostLikeServiceImpl implements PostLikeService {
     }
 
     @Override
-    public PostLike getLike(PostLike like) {
-        return postLikeRepo.findPostLikeByPostLike(like);
+    public PostLike getLikeById(Long id) {
+        return postLikeRepo.findPostLikeById(id);
     }
 
     @Override
