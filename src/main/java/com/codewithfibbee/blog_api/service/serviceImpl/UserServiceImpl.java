@@ -78,6 +78,7 @@ public class UserServiceImpl implements UserService {
             String presentDate = DateFor.format(date);
             String deleteDate = user.getDeactivationDate();
             int deleteAction = presentDate.compareTo(deleteDate);
+            log.info("******* " + deleteAction);
             if (deleteAction > 0 || deleteAction == 0) {
                user.setIsDeleted(true);
                 userRepo.save(user);
