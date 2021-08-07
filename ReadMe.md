@@ -28,10 +28,3 @@
     · All part of your code should be tested
     · Database design should be normalised and entities should have necessary relationship mapping
     · Add timestamp to your tables where necessary
-
-#    Assessment Criteria 
-    1. Codebase is fully tested.
-    2. All SQL queries are efficient
-    3. Efficient table mappings
-    4. Defined response format************
-    5. Codebase is clean and 100% DRY.
